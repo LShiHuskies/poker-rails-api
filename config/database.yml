@@ -1,17 +1,17 @@
 development:
   adapter: postgresql
-  database: my_database_development
+  database: my_databaseRails
   pool: 5
   timeout: 5000
 
 test:
   adapter: postgresql
-  database: my_database_development
+  database: my_databaseRails
   pool: 5
   timeout: 5000
 
 production:
   adapter: postgresql
-  database: my_database_development
+  database: my_databaseRails
   pool: 5
   timeout: 5000
