@@ -24,11 +24,6 @@ class Api::UsersController < ApplicationController
         username: @user.username,
         id: @user.id
       }
-      # serialized_data = ActiveModelSerializers::Adapter::Json.new(
-      #   UserSerializer.new(@user)
-      # ).serializable_hash
-      # UsersChannel.broadcast_to @user, serialized_data
-      # head :ok
     else
       render json: {
         errors: @user.errors.full_messages
