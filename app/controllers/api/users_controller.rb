@@ -1,4 +1,5 @@
 class Api::UsersController < ApplicationController
+  protect_from_forgery with: :null_session
   before_action :requires_login, only: [:index, :show, :users_games]
 
   def index
