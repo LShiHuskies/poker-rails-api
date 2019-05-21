@@ -1,4 +1,5 @@
 class Api::SessionsController < ApplicationController
+  protect_from_forgery
 
   def create
 
