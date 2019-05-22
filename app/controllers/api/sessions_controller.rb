@@ -23,6 +23,9 @@ class Api::SessionsController < ApplicationController
       render json: {
         username: @user.username,
         id: @user.id,
+        firstname: @user.firstname,
+        lastname: @user.lastname,
+        email: @user.email,
         token: get_token(payload(@user.username, @user.id) )
       }
     else

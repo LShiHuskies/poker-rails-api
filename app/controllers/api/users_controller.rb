@@ -18,13 +18,13 @@ class Api::UsersController < ApplicationController
     if @user.save
       ActionCable.server.broadcast 'UsersChannel', {
         username: @user.username,
-        id: @user.id
+        id: @user.id,
+        firstname: @user.firstname,
+        lastname: @user.lastname,
+        email: @user.email
       }
 
-      render json: {
-        username: @user.username,
-        id: @user.id
-      }
+      render json: @user
     else
       render json: {
         errors: @user.errors.full_messages
