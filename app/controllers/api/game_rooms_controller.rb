@@ -1,4 +1,5 @@
 class Api::GameRoomsController < ApplicationController
+  protect_from_forgery with: :null_session
   before_action :requires_login, only: [:index]
 
   def index
@@ -26,16 +27,16 @@ class Api::GameRoomsController < ApplicationController
 
     if @game_room.save
       ActionCable.server.broadcast 'GameRoomsChannel', {
-        id: @game_room.id
-        name: @game_room.name
-        smallblind: @game_room.smallblind
+        id: @game_room.id,
+        name: @game_room.name,
+        smallblind: @game_room.smallblind,
         bigblind: @game_room.bigblind
       }
 
       render json: {
-        id: @game_room.id
-        name: @game_room.name
-        smallblind: @game_room.smallblind
+        id: @game_room.id,
+        name: @game_room.name,
+        smallblind: @game_room.smallblind,
         bigblind: @game_room.bigblind
       }
 
