@@ -1,6 +1,6 @@
 class Api::GameRoomsController < ApplicationController
   protect_from_forgery with: :null_session
-  before_action :requires_login, only: [:index]
+  # before_action :requires_login, only: [:index]
 
   def index
     # token = request.headers["Authorization"]
@@ -17,9 +17,8 @@ class Api::GameRoomsController < ApplicationController
     #
     # requires_login()
 
-    if params["type"]
-      @game_rooms = GameRoom.find_by(type: params[:type])
-      byebug
+    if params["style"]
+      @game_rooms = GameRoom.where(style: params[:style])
     else
       @game_rooms = GameRoom.all
     end
@@ -103,8 +102,8 @@ class Api::GameRoomsController < ApplicationController
     end
 
 
-    if params[:type]
-     @game_room.update(type: params[:type])
+    if params[:style]
+     @game_room.update(style: params[:style])
     end
 
     render json: @game_room

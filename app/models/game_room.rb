@@ -5,4 +5,5 @@ class GameRoom < ApplicationRecord
   validates :name, presence: true, uniqueness: true
   validates :smallblind, presence: true
   validates :bigblind, presence: true
+  validates :style, presence: true
 end
