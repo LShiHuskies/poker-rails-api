@@ -18,7 +18,8 @@ class Api::GameRoomsController < ApplicationController
     # requires_login()
 
     if params["type"]
-      @game_rooms = GameRoom.find_by(type: params["type"])
+      @game_rooms = GameRoom.find_by(type: params[:type])
+      byebug
     else
       @game_rooms = GameRoom.all
     end
@@ -69,10 +70,10 @@ class Api::GameRoomsController < ApplicationController
 
   def show
     if (params[:id])
-      @game_rooms = GameRoom.find_by(id: params[:id])
+      @game_room = GameRoom.find_by(id: params[:id])
     end
 
-    render json: @game_rooms
+    render json: @game_room
   end
 
   def update
@@ -86,18 +87,27 @@ class Api::GameRoomsController < ApplicationController
       @user_game_room.user_id = params['user_id']
       @user_game_room.game_room_id = @game_room.id
       @user_game_room.deck = @game_room.deck
+
+
+      if @user_game_room.save
+          ActionCable.server.broadcast 'GameRoomsChannel', {
+            id: @game_room.id,
+            name: @game_room.name,
+            smallblind: @game_room.smallblind,
+            bigblind: @game_room.bigblind,
+            deck: @game_room.deck,
+            users: @game_room.users
+          }
+      end
+
     end
 
-    if @user_game_room.save
-        ActionCable.server.broadcast 'GameRoomsChannel', {
-          id: @game_room.id,
-          name: @game_room.name,
-          smallblind: @game_room.smallblind,
-          bigblind: @game_room.bigblind,
-          deck: @game_room.deck,
-          users: @game_room.users
-        }
+
+    if params[:type]
+     @game_room.update(type: params[:type])
     end
+
+    render json: @game_room
   end
 
   def destroy
