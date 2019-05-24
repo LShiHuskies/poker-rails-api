@@ -16,7 +16,18 @@ class Api::GameRoomsController < ApplicationController
     # end
     #
     # requires_login()
-    render json: GameRoom.all
+
+    if params["type"]
+      @game_rooms = GameRoom.find_by(type: params["type"])
+    else
+      @game_rooms = GameRoom.all
+    end
+
+    ActionCable.server.broadcast 'GameRoomsChannel', {
+      game_rooms: @game_rooms
+    }
+
+    render json: @game_rooms
   end
 
   def create
@@ -57,9 +68,11 @@ class Api::GameRoomsController < ApplicationController
 
 
   def show
-    @game_room = GameRoom.find_by(id: params[:id])
+    if (params[:id])
+      @game_rooms = GameRoom.find_by(id: params[:id])
+    end
 
-    render json: @game_room
+    render json: @game_rooms
   end
 
   def update
