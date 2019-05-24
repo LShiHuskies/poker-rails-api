@@ -27,9 +27,9 @@ class Api::GameRoomsController < ApplicationController
 
     if @game_room.save
 
-      response = RestClient.get "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1"
+      response = JSON.parse RestClient.get "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1"
 
-      @game_room.deck = JSON.parse response
+      @game_room.deck = response["deck_id"]
 
       ActionCable.server.broadcast 'GameRoomsChannel', {
         id: @game_room.id,
@@ -81,10 +81,24 @@ class Api::GameRoomsController < ApplicationController
           name: @game_room.name,
           smallblind: @game_room.smallblind,
           bigblind: @game_room.bigblind,
-          deck: @game_room.deck
-          users: @gameroom.users
+          deck: @game_room.deck,
+          users: @game_room.users
         }
     end
+  end
+
+  def destroy
+    @game_room = GameRoom.find_by(id: params[:id])
+
+    if @game_room.destroy
+
+      render json: @game_room
+    else
+      render json: {
+        errors: @game_room.errors.full_messages
+      }, status: :unprocessable_entity
+    end
+
   end
 
 
