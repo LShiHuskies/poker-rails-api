@@ -26,18 +26,25 @@ class Api::GameRoomsController < ApplicationController
     @game_room.bigblind = params[:bigblind]
 
     if @game_room.save
+
+      response = RestClient.get "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1"
+
+      @game_room.deck = JSON.parse response
+
       ActionCable.server.broadcast 'GameRoomsChannel', {
         id: @game_room.id,
         name: @game_room.name,
         smallblind: @game_room.smallblind,
-        bigblind: @game_room.bigblind
+        bigblind: @game_room.bigblind,
+        deck: @game_room.deck
       }
 
       render json: {
         id: @game_room.id,
         name: @game_room.name,
         smallblind: @game_room.smallblind,
-        bigblind: @game_room.bigblind
+        bigblind: @game_room.bigblind,
+        deck: @game_room.deck
       }
 
     else
@@ -58,6 +65,26 @@ class Api::GameRoomsController < ApplicationController
   def update
     @game_room = GameRoom.find_by(id: params[:id])
 
+    if params['user_id']
+      @user = User.find_by(id: params['user_id'])
+      @game_room.users << @user
+
+      @user_game_room = UserGameRoom.new
+      @user_game_room.user_id = params['user_id']
+      @user_game_room.game_room_id = @game_room.id
+      @user_game_room.deck = @game_room.deck
+    end
+
+    if @user_game_room.save
+        ActionCable.server.broadcast 'GameRoomsChannel', {
+          id: @game_room.id,
+          name: @game_room.name,
+          smallblind: @game_room.smallblind,
+          bigblind: @game_room.bigblind,
+          deck: @game_room.deck
+          users: @gameroom.users
+        }
+    end
   end
 
 
