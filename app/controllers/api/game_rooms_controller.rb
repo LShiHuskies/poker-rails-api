@@ -37,10 +37,11 @@ class Api::GameRoomsController < ApplicationController
     @game_room.bigblind = params[:bigblind]
     @game_room.style = params[:style]
 
-    if @game_room.save
-      response = JSON.parse RestClient.get "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1"
+    response = JSON.parse RestClient.get "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1"
 
-      @game_room.deck = response["deck_id"]
+    @game_room.deck = response["deck_id"]
+
+    if @game_room.save
 
       ActionCable.server.broadcast 'GameRoomsChannel', {
         id: @game_room.id,
