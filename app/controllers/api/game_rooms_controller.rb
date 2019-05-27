@@ -1,6 +1,6 @@
 class Api::GameRoomsController < ApplicationController
   protect_from_forgery with: :null_session
-  # before_action :requires_login, only: [:index]
+  before_action :requires_login, only: [:index]
 
   def index
     # token = request.headers["Authorization"]
@@ -17,7 +17,7 @@ class Api::GameRoomsController < ApplicationController
     #
     # requires_login()
 
-    if params["style"]
+    if params[:style]
       @game_rooms = GameRoom.where(style: params[:style])
     else
       @game_rooms = GameRoom.all
@@ -35,9 +35,9 @@ class Api::GameRoomsController < ApplicationController
     @game_room.name = params[:name]
     @game_room.smallblind = params[:smallblind]
     @game_room.bigblind = params[:bigblind]
+    @game_room.style = params[:style]
 
     if @game_room.save
-
       response = JSON.parse RestClient.get "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1"
 
       @game_room.deck = response["deck_id"]
@@ -77,6 +77,12 @@ class Api::GameRoomsController < ApplicationController
 
   def update
     @game_room = GameRoom.find_by(id: params[:id])
+
+    if @game_room.deck == nil
+      response = JSON.parse RestClient.get "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1"
+
+      @game_room.deck = response["deck_id"]
+    end
 
     if params['user_id']
       @user = User.find_by(id: params['user_id'])
