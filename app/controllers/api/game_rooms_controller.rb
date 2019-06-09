@@ -3,20 +3,6 @@ class Api::GameRoomsController < ApplicationController
   before_action :requires_login, only: [:index]
 
   def index
-    # token = request.headers["Authorization"]
-
-    # authenticate(Game.all)
-
-    # if !valid_token?
-    #   render json: {
-    #     message: 'INFO ENTERED IS WRONG!!!'
-    #   }, status: :unauthorized
-    # else
-    #   render json: Game.all
-    # end
-    #
-    # requires_login()
-
     if params[:style]
       @game_rooms = GameRoom.where(style: params[:style])
     else
